@@ -7,10 +7,12 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node --inspect --watch src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --env-file .env --inspect --watch src/index.ts",
+    "test:dev": "node --env-file .env --inspect --watch --test ./tests/**/*.test.ts",
+    "test": "node --env-file .env --test ./test ./tests/**/*.test.ts"
   },
   "dependencies": {
+    "@openrouter/sdk": "^1.5.120",
     "@types/node": "^24.19.2",
     "fastify": "^5.7.4"
   }
