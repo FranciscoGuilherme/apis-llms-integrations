@@ -1,0 +1,19 @@
+import { buildGraph } from "./graph/graph.ts";
+import { createServer } from "./server.ts";
+
+export const graph = buildGraph();
+const app = createServer(graph);
+
+await app.listen({ port: 3000, host: "0.0.0.0" });
+app.log.info("server running at 3000");
+
+app
+  .inject({
+    method: "POST",
+    url: "/chat",
+    body: { question: "What is Quantitative Trading?" },
+  })
+  .then((response) => {
+    console.log("Response status", response.statusCode);
+    console.log("Response body", response.body);
+  });
