@@ -3,6 +3,7 @@ import { withLangGraph } from "@langchain/langgraph/zod";
 import { BaseMessage } from "langchain";
 import { z } from "zod/v3";
 import { chatResponseNode } from "./nodes/chat-response.node.ts";
+import { fallbackNode } from "./nodes/fallback.node.ts";
 import { identifyIntentNode } from "./nodes/identify-intent.node.ts";
 import { lowerCaseNode } from "./nodes/lower-case.node.ts";
 import { upperCaseNode } from "./nodes/upper-case.node.ts";
@@ -23,6 +24,7 @@ export function buildGraph() {
     .addNode("chatResponseNode", chatResponseNode)
     .addNode("upperCaseNode", upperCaseNode)
     .addNode("lowerCaseNode", lowerCaseNode)
+    .addNode("fallbackNode", fallbackNode)
     .addEdge(START, "identifyIntentNode")
     .addConditionalEdges(
       "identifyIntentNode",
@@ -33,17 +35,18 @@ export function buildGraph() {
           case "lowercase":
             return "lowercase";
           default:
-            "";
             return "fallback";
         }
       },
       {
         uppercase: "upperCaseNode",
         lowercase: "lowerCaseNode",
+        fallback: "fallbackNode",
       },
     )
     .addEdge("upperCaseNode", "chatResponseNode")
     .addEdge("lowerCaseNode", "chatResponseNode")
+    .addEdge("fallbackNode", "chatResponseNode")
     .addEdge("chatResponseNode", END);
 
   return workflow.compile();
